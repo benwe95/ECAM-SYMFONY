@@ -4,14 +4,25 @@
     "require": {
         "php": "^7.0.8",
         "ext-iconv": "*",
+        "sensio/framework-extra-bundle": "^5.1",
+        "sensiolabs/security-checker": "^4.1",
+        "symfony/asset": "^3.4",
         "symfony/console": "^3.4",
         "symfony/flex": "^1.0",
         "symfony/framework-bundle": "^3.4",
         "symfony/lts": "^3",
+        "symfony/orm-pack": "^1.0",
+        "symfony/twig-bundle": "^3.4",
+        "symfony/web-server-bundle": "^3.4",
         "symfony/yaml": "^3.4"
     },
     "require-dev": {
-        "symfony/dotenv": "^3.4"
+        "easycorp/easy-log-handler": "^1.0.2",
+        "symfony/debug-bundle": "^3.3|^4.0",
+        "symfony/dotenv": "^3.4",
+        "symfony/monolog-bundle": "^3.0",
+        "symfony/profiler-pack": "^1.0",
+        "symfony/var-dumper": "^3.3|^4.0"
     },
     "config": {
         "preferred-install": {
@@ -37,7 +48,8 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
+            "security-checker security:check": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"
