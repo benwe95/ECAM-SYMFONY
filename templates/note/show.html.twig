@@ -3,5 +3,33 @@
 {% block title %}Read {{ title }}{% endblock %}
 
 {% block body %}
-    <p>First Note! Wouhou</p>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="show-note-container p-3 mt-4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {#<img class="show-note-img" src="{ asset('images/.jpeg') }"> #}
+                            <div class="show-note-title-container d-inline-block pl-3 align-middle">
+                                <span class="show-note-title ">{{ title }}</span>
+                                <br>
+                                <span class="align-left note-details">
+                                    {#<img class="note-author-img rounded-circle" src="{{ asset('images/alien-profile.png') }}">#} Author </span>
+                                <span class="pl-2 note-details"> Date</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="note-text">
+                                FIRST NOTE {{ title }}!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
