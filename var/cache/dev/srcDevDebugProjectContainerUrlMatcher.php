@@ -39,16 +39,29 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
                 return array_replace($ret, $this->redirect($rawPathinfo.'/', 'app_homepage'));
             }
 
+            if (!in_array($canonicalMethod, array('GET'))) {
+                $allow = array_merge($allow, array('GET'));
+                goto not_app_homepage;
+            }
+
             return $ret;
         }
         not_app_homepage:
 
-        // note_show
-        if (0 === strpos($pathinfo, '/notes') && preg_match('#^/notes/(?P<slug>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::show',));
+        if (0 === strpos($pathinfo, '/notes')) {
+            // note_show
+            if (preg_match('#^/notes/(?P<slug>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
+            }
+
+            // list_notes_show
+            if ('/notes' === $pathinfo) {
+                return array (  '_controller' => 'App\\Controller\\NoteController::showListNotes',  '_route' => 'list_notes_show',);
+            }
+
         }
 
-        if (0 === strpos($pathinfo, '/_')) {
+        elseif (0 === strpos($pathinfo, '/_')) {
             // _twig_error_test
             if (0 === strpos($pathinfo, '/_error') && preg_match('#^/_error/(?P<code>\\d+)(?:\\.(?P<_format>[^/]++))?$#sD', $pathinfo, $matches)) {
                 return $this->mergeDefaults(array_replace($matches, array('_route' => '_twig_error_test')), array (  '_controller' => 'twig.controller.preview_error:previewErrorPageAction',  '_format' => 'html',));
