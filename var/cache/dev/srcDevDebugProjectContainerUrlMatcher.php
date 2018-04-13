@@ -28,9 +28,46 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             $canonicalMethod = 'GET';
         }
 
+        // category
+        if ('/category' === $pathinfo) {
+            return array (  '_controller' => 'App\\Controller\\CategoryController::index',  '_route' => 'category',);
+        }
+
+        // category_list
+        if ('/categories' === $pathinfo) {
+            return array (  '_controller' => 'App\\Controller\\CategoryController::showCategories',  '_route' => 'category_list',);
+        }
+
+        // category_add
+        if ('/add-category' === $pathinfo) {
+            return array (  '_controller' => 'App\\Controller\\CategoryController::addCategory',  '_route' => 'category_add',);
+        }
+
+        // note_add
+        if ('/add-note' === $pathinfo) {
+            $ret = array (  '_controller' => 'App\\Controller\\NoteController::addNote',  '_route' => 'note_add',);
+            if (!in_array($canonicalMethod, array('GET', 'POST'))) {
+                $allow = array_merge($allow, array('GET', 'POST'));
+                goto not_note_add;
+            }
+
+            return $ret;
+        }
+        not_note_add:
+
+        // category_edit
+        if (0 === strpos($pathinfo, '/edit-category') && preg_match('#^/edit\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_edit')), array (  '_controller' => 'App\\Controller\\CategoryController::editCategory',));
+        }
+
+        // note_edit
+        if (0 === strpos($pathinfo, '/edit-note') && preg_match('#^/edit\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_edit')), array (  '_controller' => 'App\\Controller\\NoteController::editNote',));
+        }
+
         // app_homepage
         if ('' === $trimmedPathinfo) {
-            $ret = array (  '_controller' => 'App\\Controller\\NoteController::homepage',  '_route' => 'app_homepage',);
+            $ret = array (  '_controller' => 'App\\Controller\\MainController::homepage',  '_route' => 'app_homepage',);
             if ('/' === substr($pathinfo, -1)) {
                 // no-op
             } elseif ('GET' !== $canonicalMethod) {
@@ -48,20 +85,17 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
         }
         not_app_homepage:
 
-        if (0 === strpos($pathinfo, '/notes')) {
-            // note_show
-            if (preg_match('#^/notes/(?P<slug>[^/]++)$#sD', $pathinfo, $matches)) {
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
-            }
-
-            // list_notes_show
-            if ('/notes' === $pathinfo) {
-                return array (  '_controller' => 'App\\Controller\\NoteController::showListNotes',  '_route' => 'list_notes_show',);
-            }
-
+        // note_list
+        if ('/notes' === $pathinfo) {
+            return array (  '_controller' => 'App\\Controller\\NoteController::showNotes',  '_route' => 'note_list',);
         }
 
-        elseif (0 === strpos($pathinfo, '/_')) {
+        // note_del
+        if (0 === strpos($pathinfo, '/del-note') && preg_match('#^/del\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_del')), array (  '_controller' => 'App\\Controller\\NoteController::deleteNote',));
+        }
+
+        if (0 === strpos($pathinfo, '/_')) {
             // _twig_error_test
             if (0 === strpos($pathinfo, '/_error') && preg_match('#^/_error/(?P<code>\\d+)(?:\\.(?P<_format>[^/]++))?$#sD', $pathinfo, $matches)) {
                 return $this->mergeDefaults(array_replace($matches, array('_route' => '_twig_error_test')), array (  '_controller' => 'twig.controller.preview_error:previewErrorPageAction',  '_format' => 'html',));
