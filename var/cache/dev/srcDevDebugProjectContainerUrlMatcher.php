@@ -28,11 +28,6 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             $canonicalMethod = 'GET';
         }
 
-        // category
-        if ('/category' === $pathinfo) {
-            return array (  '_controller' => 'App\\Controller\\CategoryController::index',  '_route' => 'category',);
-        }
-
         // category_list
         if ('/categories' === $pathinfo) {
             return array (  '_controller' => 'App\\Controller\\CategoryController::showCategories',  '_route' => 'category_list',);
@@ -55,6 +50,16 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
         }
         not_note_add:
 
+        // category_show
+        if (0 === strpos($pathinfo, '/show-category') && preg_match('#^/show\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_show')), array (  '_controller' => 'App\\Controller\\CategoryController::showCategory',));
+        }
+
+        // note_show
+        if (0 === strpos($pathinfo, '/show-note') && preg_match('#^/show\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
+        }
+
         // category_edit
         if (0 === strpos($pathinfo, '/edit-category') && preg_match('#^/edit\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
             return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_edit')), array (  '_controller' => 'App\\Controller\\CategoryController::editCategory',));
@@ -63,6 +68,16 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
         // note_edit
         if (0 === strpos($pathinfo, '/edit-note') && preg_match('#^/edit\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
             return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_edit')), array (  '_controller' => 'App\\Controller\\NoteController::editNote',));
+        }
+
+        // category_del
+        if (0 === strpos($pathinfo, '/del-category') && preg_match('#^/del\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_del')), array (  '_controller' => 'App\\Controller\\CategoryController::deleteCategory',));
+        }
+
+        // note_del
+        if (0 === strpos($pathinfo, '/del-note') && preg_match('#^/del\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_del')), array (  '_controller' => 'App\\Controller\\NoteController::deleteNote',));
         }
 
         // app_homepage
@@ -87,12 +102,7 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         // note_list
         if ('/notes' === $pathinfo) {
-            return array (  '_controller' => 'App\\Controller\\NoteController::showNotes',  '_route' => 'note_list',);
-        }
-
-        // note_del
-        if (0 === strpos($pathinfo, '/del-note') && preg_match('#^/del\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_del')), array (  '_controller' => 'App\\Controller\\NoteController::deleteNote',));
+            return array (  '_controller' => 'App\\Controller\\NoteController::listNotes',  '_route' => 'note_list',);
         }
 
         if (0 === strpos($pathinfo, '/_')) {

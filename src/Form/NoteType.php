@@ -44,7 +44,7 @@ class NoteType extends AbstractType
                 )
             )
             ->add('save', SubmitType::class, [
-                'label' => 'Create',
+                'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary mt-3']]
             )
         ;
