@@ -21,9 +21,9 @@ class NoteController extends AbstractController
 {
 
     /**
-     * @Route("/notes", name="note_list")
-     *
      * Display all the notes present in the database with the possible actions (show, edit, del)
+     * @Route("/notes", name="note_list")
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
      */
     public function listNotes()
     {
@@ -36,22 +36,24 @@ class NoteController extends AbstractController
 
 
     /**
-     * @Route("/add-note", name="note_add")
+     * @Route("/notes/add", name="note_add")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @return \App\Controller\NoteController::handleNote
      */
     public function addNote(Request $request){
         $note = new Note();
-
         return $this->handleNote($request, $note);
     }
 
 
     /**
-     * @Route("/show-note/{id}", name="note_show")
+     * @Route("/notes/show/{id}", name="note_show")
+     * @param Note $note
+     * @param int $id
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
      */
-    public function showNote($id){
-        $note = $this->getDoctrine()->getRepository(Note::class)->find($id);
+    public function showNote(Note $note, $id){
 
         if (!$note) {
             throw $this->createNotFoundException(
@@ -67,10 +69,13 @@ class NoteController extends AbstractController
 
 
     /**
-     *@Route("/edit-note/{id}", name="note_edit")
+     * @Route("/notes/edit/{id}", name="note_edit")
+     * @param Request $request
+     * @param Note $note
+     * @param int $id
+     * @return \App\Controller\NoteController::handleNote
      */
-    public function editNote($id, Request $request){
-        $note = $this->getDoctrine()->getRepository(Note::class)->find($id);
+    public function editNote(Request $request, Note $note, $id){
 
         if (!$note) {
             throw $this->createNotFoundException(
@@ -83,10 +88,12 @@ class NoteController extends AbstractController
 
 
     /**
-     *@Route("/del-note/{id}", name="note_del")
+     * @Route("/notes/del/{id}", name="note_del")
+     * @param Note $note
+     * @param int $id
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::redirectToRoute
      */
-    public function deleteNote($id){
-        $note = $this->getDoctrine()->getRepository(Note::class)->find($id);
+    public function deleteNote(Note $note, $id){
 
         if (!$note) {
             throw $this->createNotFoundException(
@@ -104,6 +111,9 @@ class NoteController extends AbstractController
 
     /**
      * Handle the process to create a new note OR edit an existing one
+     * @param Request $request
+     * @param Note $note
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
      */
     public function handleNote(Request $request, Note $note){
 

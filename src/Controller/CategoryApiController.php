@@ -6,30 +6,44 @@ use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Entity\Note;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
-class CategoryController extends Controller
+class CategoryApiController extends Controller
 {
 
     /**
-     * @Route("/categories", name="category_list")
-     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
+     * @Route("/api/categories", name="api_category_list")
+     * @Method("GET")
+     * @return JsonResponse
      */
-    public function showCategories(){
-        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+    public function listCategories(){
+        $data = $this->getDoctrine()->getRepository(Category::class)->findAll();
+        $data = $this->get('serializer')->serialize($data, 'json');
 
-        return $this->render('category/list.html.twig', [
-            'categories' => $categories
-        ]);
-
+        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
     }
 
 
     /**
-     * @Route("/categories/add", name="category_add")
+     * @Route("/api/categories/{id}", name="api_category_show")
+     * @Method("GET")
+     * @return JsonResponse
+     */
+    public function showCategory(Category $category){
+        $data = $this->get('serializer')->serialize($category, 'json');
+
+        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
+    }
+
+
+    /**
+     * @Route("/api/categories", name="api_category_add")
+     * @Method("POST")
      * @param Request $request
      * @return \App\Controller\CategoryController::handleCategory
      */
@@ -40,7 +54,8 @@ class CategoryController extends Controller
 
 
     /**
-     * @Route("/categories/edit/{id}", name="category_edit")
+     * @Route("/api/categories/{id}", name="api_category_edit")
+     * @Method("PUT")
      * @param Category $category
      * @param int $id
      * @return \App\Controller\CategoryController::handleCategory
@@ -57,10 +72,11 @@ class CategoryController extends Controller
 
 
     /**
-     * @Route("/categories/del/{id}", name="category_del")
+     * @Route("/api/categories/{id}", name="api_category_del")
+     * @Method("DELETE")
      * @param Category $category
      * @param int $id
-     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::redirectToRoute
+     * @return JsonResponse
      */
     public function deleteCategory(Category $category, $id){
         $entityManager = $this->getDoctrine()->getManager();
@@ -84,34 +100,24 @@ class CategoryController extends Controller
         $entityManager->remove($category);
         $entityManager->flush();
 
-        return $this->redirectToRoute('category_list');
+        return new JsonResponse(['message' => 'Category deleted']);
     }
 
 
     /**
      * @param Request $request
      * @param Category $category
-     * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function handleCategory(Request $request, Category $category){
+        $data = json_decode($request->getContent(), true);
 
-        $form = $this->createForm(CategoryType::class, $category);
+        $category->setWording($data['wording']);
 
-        $form->handleRequest($request);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($category);
+        $entityManager->flush();
 
-        if($form->isSubmitted() && $form->isValid()){
-            $category = $form->getData();
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($category);
-
-            $entityManager->flush();
-
-            return $this->redirectToRoute('category_list');
-        }
-
-        return $this->render('category/category.html.twig', [
-            'form' => $form->createView()
-        ]);
+        return new JsonResponse(['message' => 'Changes saved']);
     }
 }

@@ -18,6 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 
 
+/* AJOUTER LES ASSERTIONS POUR LA VALIDATION DES DONNEES */
+
 class NoteType extends AbstractType
 {
 

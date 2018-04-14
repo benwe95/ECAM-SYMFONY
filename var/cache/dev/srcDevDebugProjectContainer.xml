@@ -129,6 +129,8 @@
     <parameter key="router.cache_class_prefix">srcDevDebugProjectContainer</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
+    <parameter key="serializer.mapping.cache.file">/home/ben/Documents/INFORMATIQUE/GITHUB/BENWE95/ECAM-SYMFONY/var/cache/dev/serialization.php</parameter>
+    <parameter key="serializer.mapping.cache.prefix"></parameter>
     <parameter key="twig.exception_listener.controller">twig.controller.exception:showAction</parameter>
     <parameter key="twig.form.resources" type="collection">
       <parameter>form_div_layout.html.twig</parameter>
@@ -473,6 +475,9 @@
         <argument>security:check</argument>
       </call>
     </service>
+    <service id="App\Controller\CategoryApiController" class="App\Controller\CategoryApiController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+    </service>
     <service id="App\Controller\CategoryController" class="App\Controller\CategoryController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
     </service>
@@ -482,6 +487,14 @@
       <tag name="container.service_subscriber.locator" id="service_locator.yscbjmj.App\Controller\MainController"/>
       <call method="setContainer">
         <argument type="service" id="service_locator.yscbjmj.App\Controller\MainController"/>
+      </call>
+    </service>
+    <service id="App\Controller\NoteApiController" class="App\Controller\NoteApiController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <tag name="container.service_subscriber.locator" id="service_locator.yscbjmj.App\Controller\NoteApiController"/>
+      <call method="setContainer">
+        <argument type="service" id="service_locator.yscbjmj.App\Controller\NoteApiController"/>
       </call>
     </service>
     <service id="App\Controller\NoteController" class="App\Controller\NoteController" public="true" autowire="true" autoconfigure="true">
@@ -522,7 +535,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" public="false">
       <tag name="controller.argument_value_resolver" priority="-50"/>
-      <argument type="service" id="service_locator.twn6p1t"/>
+      <argument type="service" id="service_locator.enwmooc"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false">
       <tag name="controller.argument_value_resolver" priority="-100"/>
@@ -2410,6 +2423,103 @@
       <argument>false</argument>
       <argument type="service" id="cache.property_access" on-invalid="ignore"/>
     </service>
+    <service id="serializer" class="Symfony\Component\Serializer\Serializer" public="true">
+      <argument type="collection">
+        <argument type="service" id="serializer.normalizer.json_serializable"/>
+        <argument type="service" id="serializer.normalizer.datetime"/>
+        <argument type="service" id="serializer.normalizer.dateinterval"/>
+        <argument type="service" id="serializer.normalizer.data_uri"/>
+        <argument type="service" id="serializer.denormalizer.array"/>
+        <argument type="service" id="serializer.normalizer.object"/>
+      </argument>
+      <argument type="collection">
+        <argument type="service" id="serializer.encoder.xml"/>
+        <argument type="service" id="serializer.encoder.json"/>
+        <argument type="service" id="serializer.encoder.yaml"/>
+        <argument type="service" id="serializer.encoder.csv"/>
+      </argument>
+    </service>
+    <service id="serializer.normalizer.dateinterval" class="Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-915"/>
+    </service>
+    <service id="serializer.normalizer.data_uri" class="Symfony\Component\Serializer\Normalizer\DataUriNormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-920"/>
+    </service>
+    <service id="serializer.normalizer.datetime" class="Symfony\Component\Serializer\Normalizer\DateTimeNormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-910"/>
+    </service>
+    <service id="serializer.normalizer.json_serializable" class="Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-900"/>
+    </service>
+    <service id="serializer.normalizer.object" class="Symfony\Component\Serializer\Normalizer\ObjectNormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-1000"/>
+      <argument type="service" id="serializer.mapping.class_metadata_factory"/>
+      <argument>null</argument>
+      <argument type="service" id="property_accessor"/>
+      <argument>null</argument>
+    </service>
+    <service id="serializer.denormalizer.array" class="Symfony\Component\Serializer\Normalizer\ArrayDenormalizer" public="false">
+      <tag name="serializer.normalizer" priority="-990"/>
+    </service>
+    <service id="serializer.mapping.chain_loader" class="Symfony\Component\Serializer\Mapping\Loader\LoaderChain" public="false">
+      <argument type="collection">
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader" public="false">
+            <argument type="service" id="annotations.cached_reader"/>
+          </service>
+        </argument>
+      </argument>
+    </service>
+    <service id="serializer.mapping.class_metadata_factory" class="Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory" public="false">
+      <argument type="service" id="serializer.mapping.chain_loader"/>
+      <argument>null</argument>
+    </service>
+    <service id="serializer.mapping.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\SerializerCacheWarmer" public="false">
+      <tag name="kernel.cache_warmer"/>
+      <argument type="collection">
+        <argument type="service">
+          <service class="Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader" public="false">
+            <argument type="service" id="annotations.cached_reader"/>
+          </service>
+        </argument>
+      </argument>
+      <argument>/home/ben/Documents/INFORMATIQUE/GITHUB/BENWE95/ECAM-SYMFONY/var/cache/dev/serialization.php</argument>
+      <argument type="service" id="cache.serializer"/>
+    </service>
+    <service id="serializer.mapping.cache.symfony" class="Symfony\Component\Cache\Adapter\PhpArrayAdapter">
+      <argument>/home/ben/Documents/INFORMATIQUE/GITHUB/BENWE95/ECAM-SYMFONY/var/cache/dev/serialization.php</argument>
+      <argument type="service" id="cache.serializer"/>
+      <factory class="Symfony\Component\Cache\Adapter\PhpArrayAdapter" method="create"/>
+    </service>
+    <service id="serializer.mapping.cache.doctrine.apc" class="Doctrine\Common\Cache\ApcCache" public="false">
+      <call method="setNamespace">
+        <argument></argument>
+      </call>
+      <deprecated>The "%service_id%" service is deprecated since Symfony 3.2 and will be removed in 4.0. APCu should now be automatically used when available.</deprecated>
+    </service>
+    <service id="serializer.mapping.cache.apc" class="Doctrine\Common\Cache\ApcCache" public="false">
+      <call method="setNamespace">
+        <argument></argument>
+      </call>
+      <deprecated>The "%service_id%" service is deprecated since Symfony 3.1 and will be removed in 4.0. APCu should now be automatically used when available.</deprecated>
+    </service>
+    <service id="serializer.encoder.xml" class="Symfony\Component\Serializer\Encoder\XmlEncoder" public="false">
+      <tag name="serializer.encoder"/>
+    </service>
+    <service id="serializer.encoder.json" class="Symfony\Component\Serializer\Encoder\JsonEncoder" public="false">
+      <tag name="serializer.encoder"/>
+    </service>
+    <service id="serializer.encoder.yaml" class="Symfony\Component\Serializer\Encoder\YamlEncoder" public="false">
+      <tag name="serializer.encoder"/>
+    </service>
+    <service id="serializer.encoder.csv" class="Symfony\Component\Serializer\Encoder\CsvEncoder" public="false">
+      <tag name="serializer.encoder"/>
+    </service>
+    <service id="serializer.name_converter.camel_case_to_snake_case" class="Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter" public="false"/>
+    <service id="property_info.serializer_extractor" class="Symfony\Component\PropertyInfo\Extractor\SerializerExtractor" public="false">
+      <tag name="property_info.list_extractor" priority="-999"/>
+      <argument type="service" id="serializer.mapping.class_metadata_factory"/>
+    </service>
     <service id="web_server.command.server_run" class="Symfony\Bundle\WebServerBundle\Command\ServerRunCommand" public="false">
       <tag name="console.command" command="server:run"/>
       <argument>/home/ben/Documents/INFORMATIQUE/GITHUB/BENWE95/ECAM-SYMFONY/public</argument>
@@ -3302,6 +3412,14 @@
       <factory class="Doctrine\ORM\EntityManager" method="create"/>
       <configurator service="doctrine.orm.default_manager_configurator" method="configure"/>
     </service>
+    <service id="doctrine.orm.default_entity_manager.metadata_factory" class="Doctrine\Common\Persistence\Mapping\ClassMetadataFactory" public="false">
+      <factory service="doctrine.orm.default_entity_manager" method="getMetadataFactory"/>
+    </service>
+    <service id="doctrine.orm.default_entity_manager.property_info_extractor" class="Symfony\Bridge\Doctrine\PropertyInfo\DoctrineExtractor">
+      <tag name="property_info.list_extractor" priority="-1001"/>
+      <tag name="property_info.type_extractor" priority="-999"/>
+      <argument type="service" id="doctrine.orm.default_entity_manager.metadata_factory"/>
+    </service>
     <service id="doctrine_migrations.diff_command" class="Doctrine\Bundle\MigrationsBundle\Command\MigrationsDiffDoctrineCommand">
       <tag name="console.command"/>
     </service>
@@ -3386,11 +3504,16 @@
       <tag name="maker.command"/>
       <argument>/home/ben/Documents/INFORMATIQUE/GITHUB/BENWE95/ECAM-SYMFONY</argument>
     </service>
+    <service id="instanceof.Symfony\Bundle\FrameworkBundle\Controller\Controller.0.App\Controller\CategoryApiController" class="App\Controller\CategoryApiController" public="false" autowire="true" abstract="true"/>
+    <service id="abstract.instanceof.App\Controller\CategoryApiController" class="App\Controller\CategoryApiController" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Bundle\FrameworkBundle\Controller\Controller.0.App\Controller\CategoryController" class="App\Controller\CategoryController" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.App\Controller\CategoryController" class="App\Controller\CategoryController" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Component\DependencyInjection\ServiceSubscriberInterface.0.App\Controller\MainController" class="App\Controller\MainController" public="false" autowire="true" abstract="true"/>
     <service id="instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\MainController" class="App\Controller\MainController" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.App\Controller\MainController" class="App\Controller\MainController" public="false" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id="instanceof.Symfony\Component\DependencyInjection\ServiceSubscriberInterface.0.App\Controller\NoteApiController" class="App\Controller\NoteApiController" public="false" autowire="true" abstract="true"/>
+    <service id="instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\NoteApiController" class="App\Controller\NoteApiController" public="false" autowire="true" abstract="true"/>
+    <service id="abstract.instanceof.App\Controller\NoteApiController" class="App\Controller\NoteApiController" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Component\DependencyInjection\ServiceSubscriberInterface.0.App\Controller\NoteController" class="App\Controller\NoteController" public="false" autowire="true" abstract="true"/>
     <service id="instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\NoteController" class="App\Controller\NoteController" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.App\Controller\NoteController" class="App\Controller\NoteController" public="false" autowire="true" autoconfigure="true" abstract="true"/>
@@ -3522,7 +3645,15 @@
         <argument>make:migration</argument>
       </call>
     </service>
+    <service id="service_locator.h0o7lej" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection"/>
+    </service>
     <service id="service_locator.jvmi.iv" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection"/>
+    </service>
+    <service id="service_locator.cxa8dvw" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection"/>
     </service>
@@ -3530,7 +3661,7 @@
       <tag name="container.service_locator"/>
       <argument type="collection"/>
     </service>
-    <service id="service_locator.twn6p1t" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id="service_locator.enwmooc" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection"/>
     </service>
@@ -3823,12 +3954,18 @@
         <argument key="http_kernel" type="service" id="http_kernel" on-invalid="ignore"/>
         <argument key="request_stack" type="service" id="request_stack" on-invalid="ignore"/>
         <argument key="router" type="service" id="router.default" on-invalid="ignore"/>
+        <argument key="serializer" type="service" id="serializer" on-invalid="ignore"/>
         <argument key="session" type="service" id="session" on-invalid="ignore"/>
         <argument key="twig" type="service" id="twig" on-invalid="ignore"/>
       </argument>
     </service>
     <service id="service_locator.yscbjmj.App\Controller\MainController" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <argument>App\Controller\MainController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service="service_locator.yscbjmj" method="withContext"/>
+    </service>
+    <service id="service_locator.yscbjmj.App\Controller\NoteApiController" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <argument>App\Controller\NoteApiController</argument>
       <argument type="service" id="service_container"/>
       <factory service="service_locator.yscbjmj" method="withContext"/>
     </service>
@@ -3979,6 +4116,14 @@
     <service id="annotation_reader" alias="annotations.cached_reader"/>
     <service id="Doctrine\Common\Annotations\Reader" alias="annotations.cached_reader" public="false"/>
     <service id="Symfony\Component\PropertyAccess\PropertyAccessorInterface" alias="property_accessor" public="false"/>
+    <service id="Symfony\Component\Serializer\SerializerInterface" alias="serializer" public="false"/>
+    <service id="Symfony\Component\Serializer\Normalizer\NormalizerInterface" alias="serializer" public="false"/>
+    <service id="Symfony\Component\Serializer\Normalizer\DenormalizerInterface" alias="serializer" public="false"/>
+    <service id="Symfony\Component\Serializer\Encoder\EncoderInterface" alias="serializer" public="false"/>
+    <service id="Symfony\Component\Serializer\Encoder\DecoderInterface" alias="serializer" public="false"/>
+    <service id="serializer.property_accessor" alias="property_accessor" public="false"/>
+    <service id="Symfony\Component\Serializer\Normalizer\ObjectNormalizer" alias="serializer.normalizer.object" public="false"/>
+    <service id="Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface" alias="serializer.mapping.class_metadata_factory" public="false"/>
     <service id="Twig_Environment" alias="twig" public="false"/>
     <service id="Twig\Environment" alias="twig" public="false"/>
     <service id="logger" alias="monolog.logger"/>

@@ -14,10 +14,18 @@ class ComposerStaticInit432dc00d3e957cbc61bd6afc86453481
     );
 
     public static $prefixLengthsPsr4 = array (
+        'p' => 
+        array (
+            'phpDocumentor\\Reflection\\' => 25,
+        ),
         'Z' => 
         array (
             'Zend\\EventManager\\' => 18,
             'Zend\\Code\\' => 10,
+        ),
+        'W' => 
+        array (
+            'Webmozart\\Assert\\' => 17,
         ),
         'T' => 
         array (
@@ -33,7 +41,9 @@ class ComposerStaticInit432dc00d3e957cbc61bd6afc86453481
             'Symfony\\Component\\Validator\\' => 28,
             'Symfony\\Component\\Translation\\' => 30,
             'Symfony\\Component\\Stopwatch\\' => 28,
+            'Symfony\\Component\\Serializer\\' => 29,
             'Symfony\\Component\\Routing\\' => 26,
+            'Symfony\\Component\\PropertyInfo\\' => 31,
             'Symfony\\Component\\PropertyAccess\\' => 33,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\OptionsResolver\\' => 34,
@@ -105,6 +115,12 @@ class ComposerStaticInit432dc00d3e957cbc61bd6afc86453481
     );
 
     public static $prefixDirsPsr4 = array (
+        'phpDocumentor\\Reflection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        ),
         'Zend\\EventManager\\' => 
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-eventmanager/src',
@@ -112,6 +128,10 @@ class ComposerStaticInit432dc00d3e957cbc61bd6afc86453481
         'Zend\\Code\\' => 
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-code/src',
+        ),
+        'Webmozart\\Assert\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
         'Twig\\' => 
         array (
@@ -149,9 +169,17 @@ class ComposerStaticInit432dc00d3e957cbc61bd6afc86453481
         array (
             0 => __DIR__ . '/..' . '/symfony/stopwatch',
         ),
+        'Symfony\\Component\\Serializer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/serializer',
+        ),
         'Symfony\\Component\\Routing\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/routing',
+        ),
+        'Symfony\\Component\\PropertyInfo\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/property-info',
         ),
         'Symfony\\Component\\PropertyAccess\\' => 
         array (

@@ -28,56 +28,153 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             $canonicalMethod = 'GET';
         }
 
-        // category_list
-        if ('/categories' === $pathinfo) {
-            return array (  '_controller' => 'App\\Controller\\CategoryController::showCategories',  '_route' => 'category_list',);
+        if (0 === strpos($pathinfo, '/api/categories')) {
+            // api_category_list
+            if ('/api/categories' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\CategoryApiController::listCategories',  '_route' => 'api_category_list',);
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
+                    goto not_api_category_list;
+                }
+
+                return $ret;
+            }
+            not_api_category_list:
+
+            // api_category_show
+            if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_show')), array (  '_controller' => 'App\\Controller\\CategoryApiController::showCategory',));
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
+                    goto not_api_category_show;
+                }
+
+                return $ret;
+            }
+            not_api_category_show:
+
+            // api_category_add
+            if ('/api/categories' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\CategoryApiController::addCategory',  '_route' => 'api_category_add',);
+                if (!in_array($requestMethod, array('POST'))) {
+                    $allow = array_merge($allow, array('POST'));
+                    goto not_api_category_add;
+                }
+
+                return $ret;
+            }
+            not_api_category_add:
+
+            // api_category_edit
+            if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_edit')), array (  '_controller' => 'App\\Controller\\CategoryApiController::editCategory',));
+                if (!in_array($requestMethod, array('PUT'))) {
+                    $allow = array_merge($allow, array('PUT'));
+                    goto not_api_category_edit;
+                }
+
+                return $ret;
+            }
+            not_api_category_edit:
+
+            // api_category_del
+            if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_del')), array (  '_controller' => 'App\\Controller\\CategoryApiController::deleteCategory',));
+                if (!in_array($requestMethod, array('DELETE'))) {
+                    $allow = array_merge($allow, array('DELETE'));
+                    goto not_api_category_del;
+                }
+
+                return $ret;
+            }
+            not_api_category_del:
+
         }
 
-        // category_add
-        if ('/add-category' === $pathinfo) {
-            return array (  '_controller' => 'App\\Controller\\CategoryController::addCategory',  '_route' => 'category_add',);
+        elseif (0 === strpos($pathinfo, '/api/notes')) {
+            // api_note_list
+            if ('/api/notes' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\NoteApiController::listNotes',  '_route' => 'api_note_list',);
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
+                    goto not_api_note_list;
+                }
+
+                return $ret;
+            }
+            not_api_note_list:
+
+            // api_note_show
+            if (preg_match('#^/api/notes/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_note_show')), array (  '_controller' => 'App\\Controller\\NoteApiController::showNote',));
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
+                    goto not_api_note_show;
+                }
+
+                return $ret;
+            }
+            not_api_note_show:
+
+            // api_note_add
+            if ('/api/notes' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\NoteApiController::addNote',  '_route' => 'api_note_add',);
+                if (!in_array($requestMethod, array('POST'))) {
+                    $allow = array_merge($allow, array('POST'));
+                    goto not_api_note_add;
+                }
+
+                return $ret;
+            }
+            not_api_note_add:
+
+            // api_note_edit
+            if (preg_match('#^/api/notes/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_note_edit')), array (  '_controller' => 'App\\Controller\\NoteApiController::editNote',));
+                if (!in_array($requestMethod, array('PUT'))) {
+                    $allow = array_merge($allow, array('PUT'));
+                    goto not_api_note_edit;
+                }
+
+                return $ret;
+            }
+            not_api_note_edit:
+
+            // api_note_del
+            if (preg_match('#^/api/notes/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_note_del')), array (  '_controller' => 'App\\Controller\\NoteApiController::deleteNote',));
+                if (!in_array($requestMethod, array('DELETE'))) {
+                    $allow = array_merge($allow, array('DELETE'));
+                    goto not_api_note_del;
+                }
+
+                return $ret;
+            }
+            not_api_note_del:
+
         }
 
-        // note_add
-        if ('/add-note' === $pathinfo) {
-            $ret = array (  '_controller' => 'App\\Controller\\NoteController::addNote',  '_route' => 'note_add',);
-            if (!in_array($canonicalMethod, array('GET', 'POST'))) {
-                $allow = array_merge($allow, array('GET', 'POST'));
-                goto not_note_add;
+        elseif (0 === strpos($pathinfo, '/categories')) {
+            // category_list
+            if ('/categories' === $pathinfo) {
+                return array (  '_controller' => 'App\\Controller\\CategoryController::showCategories',  '_route' => 'category_list',);
             }
 
-            return $ret;
-        }
-        not_note_add:
+            // category_add
+            if ('/categories/add' === $pathinfo) {
+                return array (  '_controller' => 'App\\Controller\\CategoryController::addCategory',  '_route' => 'category_add',);
+            }
 
-        // category_show
-        if (0 === strpos($pathinfo, '/show-category') && preg_match('#^/show\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_show')), array (  '_controller' => 'App\\Controller\\CategoryController::showCategory',));
-        }
+            // category_edit
+            if (0 === strpos($pathinfo, '/categories/edit') && preg_match('#^/categories/edit/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_edit')), array (  '_controller' => 'App\\Controller\\CategoryController::editCategory',));
+            }
 
-        // note_show
-        if (0 === strpos($pathinfo, '/show-note') && preg_match('#^/show\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
-        }
+            // category_del
+            if (0 === strpos($pathinfo, '/categories/del') && preg_match('#^/categories/del/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_del')), array (  '_controller' => 'App\\Controller\\CategoryController::deleteCategory',));
+            }
 
-        // category_edit
-        if (0 === strpos($pathinfo, '/edit-category') && preg_match('#^/edit\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_edit')), array (  '_controller' => 'App\\Controller\\CategoryController::editCategory',));
-        }
-
-        // note_edit
-        if (0 === strpos($pathinfo, '/edit-note') && preg_match('#^/edit\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_edit')), array (  '_controller' => 'App\\Controller\\NoteController::editNote',));
-        }
-
-        // category_del
-        if (0 === strpos($pathinfo, '/del-category') && preg_match('#^/del\\-category/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'category_del')), array (  '_controller' => 'App\\Controller\\CategoryController::deleteCategory',));
-        }
-
-        // note_del
-        if (0 === strpos($pathinfo, '/del-note') && preg_match('#^/del\\-note/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_del')), array (  '_controller' => 'App\\Controller\\NoteController::deleteNote',));
         }
 
         // app_homepage
@@ -100,12 +197,42 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
         }
         not_app_homepage:
 
-        // note_list
-        if ('/notes' === $pathinfo) {
-            return array (  '_controller' => 'App\\Controller\\NoteController::listNotes',  '_route' => 'note_list',);
+        if (0 === strpos($pathinfo, '/notes')) {
+            // note_list
+            if ('/notes' === $pathinfo) {
+                return array (  '_controller' => 'App\\Controller\\NoteController::listNotes',  '_route' => 'note_list',);
+            }
+
+            // note_add
+            if ('/notes/add' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\NoteController::addNote',  '_route' => 'note_add',);
+                if (!in_array($canonicalMethod, array('GET', 'POST'))) {
+                    $allow = array_merge($allow, array('GET', 'POST'));
+                    goto not_note_add;
+                }
+
+                return $ret;
+            }
+            not_note_add:
+
+            // note_show
+            if (0 === strpos($pathinfo, '/notes/show') && preg_match('#^/notes/show/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
+            }
+
+            // note_edit
+            if (0 === strpos($pathinfo, '/notes/edit') && preg_match('#^/notes/edit/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_edit')), array (  '_controller' => 'App\\Controller\\NoteController::editNote',));
+            }
+
+            // note_del
+            if (0 === strpos($pathinfo, '/notes/del') && preg_match('#^/notes/del/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_del')), array (  '_controller' => 'App\\Controller\\NoteController::deleteNote',));
+            }
+
         }
 
-        if (0 === strpos($pathinfo, '/_')) {
+        elseif (0 === strpos($pathinfo, '/_')) {
             // _twig_error_test
             if (0 === strpos($pathinfo, '/_error') && preg_match('#^/_error/(?P<code>\\d+)(?:\\.(?P<_format>[^/]++))?$#sD', $pathinfo, $matches)) {
                 return $this->mergeDefaults(array_replace($matches, array('_route' => '_twig_error_test')), array (  '_controller' => 'twig.controller.preview_error:previewErrorPageAction',  '_format' => 'html',));

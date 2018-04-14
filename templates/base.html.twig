@@ -22,8 +22,11 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav mr-auto">
                      <li class="nav-item">
-                       <a style="color: #fff;" class="nav-link" href="#">Notes</a>
+                       <a href={{ path('note_list') }} style="color: #fff;" class="nav-link">Notes</a>
                      </li>
+                    <li class="nav-item">
+                        <a href={{ path('category_list') }} style="color: #fff;" class="nav-link">Categories</a>
+                    </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">

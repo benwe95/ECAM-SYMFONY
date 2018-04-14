@@ -19,7 +19,7 @@ class CategoryType extends AbstractType
                     'attr' => ['class' => 'form-control']]
             )
             ->add('save', SubmitType::class, [
-                    'label' => 'Create',
+                    'label' => 'Save',
                     'attr' => ['class' => 'btn btn-primary mt-3']]
             )
         ;
