@@ -18,10 +18,16 @@ class CategoryApiController extends Controller
 
     /**
      * @Route("/api/categories", name="api_category_list")
-     * @Method("GET")
+     * @Method({"GET", "OPTIONS"})
      * @return JsonResponse
      */
     public function listCategories(){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("GET, OPTIONS");
+        }
+
         $data = $this->getDoctrine()->getRepository(Category::class)->findAll();
         $data = $this->get('serializer')->serialize($data, 'json');
 
@@ -31,10 +37,16 @@ class CategoryApiController extends Controller
 
     /**
      * @Route("/api/categories/{id}", name="api_category_show")
-     * @Method("GET")
+     * @Method({"GET", "OPTIONS"})
      * @return JsonResponse
      */
     public function showCategory(Category $category){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("GET, OPTIONS");
+        }
+
         $data = $this->get('serializer')->serialize($category, 'json');
 
         return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
@@ -43,11 +55,17 @@ class CategoryApiController extends Controller
 
     /**
      * @Route("/api/categories", name="api_category_add")
-     * @Method("POST")
+     * @Method({"POST", "OPTIONS"})
      * @param Request $request
      * @return \App\Controller\CategoryController::handleCategory
      */
     public function addCategory(Request $request){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("POST, OPTIONS");
+        }
+
         $category = new Category();
         return $this->handleCategory($request, $category);
     }
@@ -55,12 +73,18 @@ class CategoryApiController extends Controller
 
     /**
      * @Route("/api/categories/{id}", name="api_category_edit")
-     * @Method("PUT")
+     * @Method({"PUT", "OPTIONS"})
      * @param Category $category
      * @param int $id
      * @return \App\Controller\CategoryController::handleCategory
      */
     public function editCategory(Category $category, $id, Request $request){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("PUT, OPTIONS");
+        }
+
         if (!$category) {
             throw $this->createNotFoundException(
                 'No note found for id ' . $id
@@ -73,12 +97,17 @@ class CategoryApiController extends Controller
 
     /**
      * @Route("/api/categories/{id}", name="api_category_del")
-     * @Method("DELETE")
+     * @Method({"DELETE", "OPTIONS"})
      * @param Category $category
      * @param int $id
      * @return JsonResponse
      */
     public function deleteCategory(Category $category, $id){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("DELETE, OPTIONS");
+        }
         $entityManager = $this->getDoctrine()->getManager();
 
         if (!$category) {
@@ -119,5 +148,18 @@ class CategoryApiController extends Controller
         $entityManager->flush();
 
         return new JsonResponse(['message' => 'Changes saved']);
+    }
+
+
+    /*
+     * Handle the automated OPTIONS request of the browser
+     */
+    public function handleOptions(string $verbs){
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/text');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set("Access-Control-Allow-Methods", $verbs);
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type',true);
+        return $response;
     }
 }

@@ -1,46 +1,50 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
 
+<html>
     <head>
-        <title>{% block title %}Notepad App{% endblock %}</title>
-        <meta charset="utf-8">
+        <meta charset="utf-8" />
+        <title>{% block title %}Notepad{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <script defer src="/public/fonts/fontawesome-all.js"></script>
+
+        <script href="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
         {% block stylesheets %}
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-            <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
         {% endblock %}
     </head>
 
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-bg mb-5">
-            <a style="margin-left: 75px;" class="navbar-brand space-brand" href="{{ path('app_homepage') }}">The Notepad App</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav mr-auto">
-                     <li class="nav-item">
-                       <a href={{ path('note_list') }} style="color: #fff;" class="nav-link">Notes</a>
-                     </li>
-                    <li class="nav-item">
-                        <a href={{ path('category_list') }} style="color: #fff;" class="nav-link">Categories</a>
-                    </li>
-                </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-info my-2 my-sm-0" type="submit">Search</button>
-                </form>
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #A9D0F5;">
+            <a class="navbar-brand" href="{{ path('app_homepage') }}">
+                {#<img src="{{ asset('') }}" width="30" height="30" class="d-inline-block align-top" alt="">#}
+                Notepad</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link active" href="{{ path('note_list') }}">Notes</a>
+                    <a class="nav-item nav-link active" href="{{ path('category_list') }}">Categories</a>
+                </ul>
+
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search tag" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                </form>
             </div>
         </nav>
 
+        <!-- CONTENT -->
         {% block body %}{% endblock %}
 
+        <!-- FOOTER -->
         <footer class="footer">
             <div class="container text-center">
-                <span class="text-muted">An educational project made by <a href="https://github.com/benwe95">Benoît Wery <i class="fab fa-github" style="color: red;"></i></a></span>
+                <span class="text-muted">An educational project made by <a href="https://github.com/benwe95">Benoît Wery <i class="fab fa-github" style="color: red;"></i></a>| 2018</span>
             </div>
         </footer>
 

@@ -45,11 +45,19 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes", name="api_note_list")
-     * @Method("GET")
+     * @Method({"GET", "OPTIONS"})
      * Display all the notes present in the database with the possible actions (show, edit, del)
      */
     public function listNotes()
     {
+        /*Pour que le navigateur puisse faire la requête, il faut ajouter le verbe OPTIONS qui
+        est envoyé par défaut dans un premier temps.
+        Cela est dû au Cross-Origin Resource Sharing (CORS)*/
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("GET, OPTIONS");
+        }
+
         //Retrieve the Notes from the database in an array()
         $data = $this->getDoctrine()->getRepository(Note::class)->findAll();
         //Serialize this data in a JSON format
@@ -61,9 +69,15 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes/{id}", name="api_note_show")
-     * @Method("GET")
+     * @Method({"GET", "OPTIONS"})
      */
     public function showNote(Note $note){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("GET, OPTIONS");
+        }
+
         $data = $this->get('serializer')->serialize($note, 'json');
 
         return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
@@ -72,10 +86,16 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes", name="api_note_add")
-     * @Method("POST")
+     * @Method({"POST", "OPTIONS"})
      * @param Request $request
      */
     public function addNote(Request $request){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("POST, OPTIONS");
+        }
+
         $note = new Note();
         return $this->handleNote($request, $note);
     }
@@ -83,18 +103,29 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes/{id}", name="api_note_edit")
-     * @Method("PUT")
+     * @Method({"PUT", "OPTIONS"})
      */
     public function editNote(Note $note, Request $request){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("PUT, OPTIONS");
+        }
+
         return $this->handleNote($request, $note);
     }
 
 
     /**
      * @Route("/api/notes/{id}", name="api_note_del")
-     * @Method("DELETE")
+     * @Method({"DELETE", "OPTIONS"})
      */
     public function deleteNote(Note $note){
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        {
+            $this->handleOptions("DELETE, OPTIONS");
+        }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($note);
@@ -108,7 +139,8 @@ class NoteApiController extends AbstractController
      * Handle the process to create a new note OR edit an existing one
      */
     public function handleNote(Request $request, Note $note){
-        $data = json_decode($request->getContent(), true);
+
+        $data = json_decode($request->getcontent(), true);
 
         $category = $this->getDoctrine()->getRepository(Category::class)
             ->find($data['category']);
@@ -124,4 +156,16 @@ class NoteApiController extends AbstractController
         return new JsonResponse(['message' => 'Changes saved']);
     }
 
+
+    /*
+     * Handle the automated OPTIONS request of the browser
+     */
+    public function handleOptions(string $verbs){
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/text');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set("Access-Control-Allow-Methods", $verbs);
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type',true);
+        return $response;
+    }
 }

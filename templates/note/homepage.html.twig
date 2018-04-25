@@ -2,13 +2,15 @@
 
 {% block body %}
     <div class="container">
-        THIS IS THE HOMEPAGE
         <div class="row">
-
-            <!-- Note List -->
-            <a href="{{ path('note_list') }}"class="btn btn-light">Notes</a>
-            <a href="{{ path('category_list') }}"class="btn btn-light">Categories</a>
-
+            <div class="jumbotron ">
+                <h1 class="display-4">NOTEPAD App</h1>
+                <p class="lead">A simple application to save your favorite notes.</p>
+                <hr class="my-4">
+                <p>Edit, save and display your notes or categories </p>
+                <a class="btn btn-primary btn-lg" href="{{ path('note_list') }}" role="button">Notes</a>
+                <a class="btn btn-primary btn-lg" href="{{ path('category_list') }}" role="button">Categories</a>
+            </div>
         </div>
     </div>
 {% endblock %}
