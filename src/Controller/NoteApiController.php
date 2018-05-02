@@ -12,10 +12,11 @@ use App\Entity\Note;
 use App\Entity\Category;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * An API Rest to be used by other clients's applications.
@@ -42,28 +43,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class NoteApiController extends AbstractController
 {
-
     /**
      * @Route("/api/notes", name="api_note_list")
      * @Method({"GET", "OPTIONS"})
      * Display all the notes present in the database with the possible actions (show, edit, del)
      */
-    public function listNotes()
-    {
+    public function listNotes(){
+
         /*Pour que le navigateur puisse faire la requête, il faut ajouter le verbe OPTIONS qui
         est envoyé par défaut dans un premier temps.
         Cela est dû au Cross-Origin Resource Sharing (CORS)*/
         if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
-            $this->handleOptions("GET, OPTIONS");
+            $this->handleCrossOriginResponse("GET, OPTIONS");
         }
 
         //Retrieve the Notes from the database in an array()
         $data = $this->getDoctrine()->getRepository(Note::class)->findAll();
+
         //Serialize this data in a JSON format
-        $data = $this->get('serializer')->serialize($data, 'json');
+        $jsoncontent = $this->get('serializer')->serialize($data, 'json');
+
+        $response = JsonResponse::fromJsonString($jsoncontent);
+        $response->headers->set('access-control-allow-origin','*');
+
         //Return the JSON format to the client
-        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
+        /*By default 'Content-type' is 'application/json'*/
+        return $response;
     }
 
 
@@ -75,12 +81,15 @@ class NoteApiController extends AbstractController
 
         if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
-            $this->handleOptions("GET, OPTIONS");
+            $this->handleCrossOriginResponse("GET, OPTIONS");
         }
 
-        $data = $this->get('serializer')->serialize($note, 'json');
+        $jsoncontent = $this->get('serializer')->serialize($note, 'json');
 
-        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
+        $response = JsonResponse::fromJsonString($jsoncontent);
+        $response->headers->set('access-control-allow-origin','*');
+
+        return $response;
     }
 
 
@@ -93,7 +102,7 @@ class NoteApiController extends AbstractController
 
         if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
-            $this->handleOptions("POST, OPTIONS");
+            $this->handleCrossOriginResponse("POST, OPTIONS");
         }
 
         $note = new Note();
@@ -109,7 +118,7 @@ class NoteApiController extends AbstractController
 
         if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
-            $this->handleOptions("PUT, OPTIONS");
+            $this->handleCrossOriginResponse("PUT, OPTIONS");
         }
 
         return $this->handleNote($request, $note);
@@ -124,7 +133,7 @@ class NoteApiController extends AbstractController
 
         if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
-            $this->handleOptions("DELETE, OPTIONS");
+            $this->handleCrossOriginResponse("DELETE, OPTIONS");
         }
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -140,6 +149,7 @@ class NoteApiController extends AbstractController
      */
     public function handleNote(Request $request, Note $note){
 
+        /* /!\ When testing with postman the content of the BODY sent must be in RAW form -> JSON not 'form-data' /!\ */
         $data = json_decode($request->getcontent(), true);
 
         $category = $this->getDoctrine()->getRepository(Category::class)
@@ -158,9 +168,9 @@ class NoteApiController extends AbstractController
 
 
     /*
-     * Handle the automated OPTIONS request of the browser
+     * Handle the automated OPTIONS request of the browser for Cross-Origin Resource Sharing
      */
-    public function handleOptions(string $verbs){
+    public function handleCrossOriginResponse(string $verbs){
         $response = new Response();
         $response->headers->set('Content-Type', 'application/text');
         $response->headers->set('Access-Control-Allow-Origin', '*');

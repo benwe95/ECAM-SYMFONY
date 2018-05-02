@@ -9,6 +9,7 @@ use App\Entity\Note;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -29,9 +30,13 @@ class CategoryApiController extends Controller
         }
 
         $data = $this->getDoctrine()->getRepository(Category::class)->findAll();
-        $data = $this->get('serializer')->serialize($data, 'json');
 
-        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
+        $jsoncontent = $this->get('serializer')->serialize($data, 'json');
+
+        $response = JsonResponse::fromJsonString($jsoncontent);
+        $response->headers->set('access-control-allow-origin','*');
+
+        return $response;
     }
 
 
@@ -47,9 +52,12 @@ class CategoryApiController extends Controller
             $this->handleOptions("GET, OPTIONS");
         }
 
-        $data = $this->get('serializer')->serialize($category, 'json');
+        $jsoncontent = $this->get('serializer')->serialize($category, 'json');
 
-        return JsonResponse::create($data, 200, ['Content-Type'=>'application/json']);
+        $response = JsonResponse::fromJsonString($jsoncontent);
+        $response->headers->set('access-control-allow-origin','*');
+        
+        return $response;
     }
 
 
