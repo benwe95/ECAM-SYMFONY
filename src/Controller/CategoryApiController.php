@@ -56,7 +56,7 @@ class CategoryApiController extends Controller
 
         $response = JsonResponse::fromJsonString($jsoncontent);
         $response->headers->set('access-control-allow-origin','*');
-        
+
         return $response;
     }
 

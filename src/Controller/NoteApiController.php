@@ -45,7 +45,7 @@ class NoteApiController extends AbstractController
 {
     /**
      * @Route("/api/notes", name="api_note_list")
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"GET"})
      * Display all the notes present in the database with the possible actions (show, edit, del)
      */
     public function listNotes(){
@@ -53,10 +53,10 @@ class NoteApiController extends AbstractController
         /*Pour que le navigateur puisse faire la requête, il faut ajouter le verbe OPTIONS qui
         est envoyé par défaut dans un premier temps.
         Cela est dû au Cross-Origin Resource Sharing (CORS)*/
-        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+        /*if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
         {
             $this->handleCrossOriginResponse("GET, OPTIONS");
-        }
+        }*/
 
         //Retrieve the Notes from the database in an array()
         $data = $this->getDoctrine()->getRepository(Note::class)->findAll();
@@ -65,7 +65,7 @@ class NoteApiController extends AbstractController
         $jsoncontent = $this->get('serializer')->serialize($data, 'json');
 
         $response = JsonResponse::fromJsonString($jsoncontent);
-        $response->headers->set('access-control-allow-origin','*');
+        //$response->headers->set('access-control-allow-origin','*');
 
         //Return the JSON format to the client
         /*By default 'Content-type' is 'application/json'*/
@@ -75,19 +75,13 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes/{id}", name="api_note_show")
-     * @Method({"GET", "OPTIONS"})
+     * @Method({"GET"})
      */
     public function showNote(Note $note){
-
-        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-        {
-            $this->handleCrossOriginResponse("GET, OPTIONS");
-        }
 
         $jsoncontent = $this->get('serializer')->serialize($note, 'json');
 
         $response = JsonResponse::fromJsonString($jsoncontent);
-        $response->headers->set('access-control-allow-origin','*');
 
         return $response;
     }
@@ -95,15 +89,11 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes", name="api_note_add")
-     * @Method({"POST", "OPTIONS"})
+     * @Method({"POST"})
      * @param Request $request
+     * @return Response
      */
     public function addNote(Request $request){
-
-        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-        {
-            $this->handleCrossOriginResponse("POST, OPTIONS");
-        }
 
         $note = new Note();
         return $this->handleNote($request, $note);
@@ -112,14 +102,9 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes/{id}", name="api_note_edit")
-     * @Method({"PUT", "OPTIONS"})
+     * @Method({"PUT"})
      */
     public function editNote(Note $note, Request $request){
-
-        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-        {
-            $this->handleCrossOriginResponse("PUT, OPTIONS");
-        }
 
         return $this->handleNote($request, $note);
     }
@@ -127,14 +112,9 @@ class NoteApiController extends AbstractController
 
     /**
      * @Route("/api/notes/{id}", name="api_note_del")
-     * @Method({"DELETE", "OPTIONS"})
+     * @Method({"DELETE"})
      */
     public function deleteNote(Note $note){
-
-        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-        {
-            $this->handleCrossOriginResponse("DELETE, OPTIONS");
-        }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($note);
@@ -163,19 +143,21 @@ class NoteApiController extends AbstractController
         $entityManager->persist($note);
         $entityManager->flush();
 
-        return new JsonResponse(['message' => 'Changes saved']);
+        return new JsonResponse(['message'=> 'saved']);
+
     }
 
 
-    /*
+    /* /!\ This is no more needed due to the CORS recipe added with composer !! /!\
+     *
      * Handle the automated OPTIONS request of the browser for Cross-Origin Resource Sharing
      */
-    public function handleCrossOriginResponse(string $verbs){
+    /*public function handleCrossOriginResponse(string $verbs){
         $response = new Response();
         $response->headers->set('Content-Type', 'application/text');
         $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set("Access-Control-Allow-Methods", $verbs);
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type',true);
         return $response;
-    }
+    }*/
 }
