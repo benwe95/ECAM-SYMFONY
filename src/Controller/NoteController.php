@@ -55,6 +55,9 @@ class NoteController extends AbstractController
      */
     public function showNote(Note $note, $id){
 
+        /* Symfony provides services, such as the following one that throws an error 404 response
+         * when the note doesn't exist
+         */
         if (!$note) {
             throw $this->createNotFoundException(
                 'No note found for id ' . $id
@@ -62,7 +65,7 @@ class NoteController extends AbstractController
         }
 
         return $this->render('note/show.html.twig', [
-            'note' => $note
+            'note' => $note,
         ]);
 
     }
@@ -115,28 +118,75 @@ class NoteController extends AbstractController
      * @param Note $note
      * @return \Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait::render
      */
-    public function handleNote(Request $request, Note $note){
+    public function handleNote(Request $request, Note $note)
+    {
 
+        /* Retrieves all the categories available to put them in the form */
         $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
 
-        $form = $this->createForm(NoteType::class, $note, array('categories'=>$categories));
+        /* Create a new instance of the form class NoteType and gives it the $note (if the method is called for an
+         * 'edit' action then the fields of the form will be filled with the current information of the note)
+         *  and the categories */
+        $form = $this->createForm(NoteType::class, $note, array('categories' => $categories));
 
+        /* Default method handleRequest inspects the given request and calls 'submit()' if the form was submitted. */
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
+
             $note = $form->getData();
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($note);
+            if ($note->isValidContent()) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($note);
 
-            $entityManager->flush();
+                $entityManager->flush();
 
-            return $this->redirectToRoute('note_list');
+                /*$this->addFlash(
+                    'notice',
+                    'Your changes were saved!'
+                );*/
+
+                /* Once the note is created or updated and the form is submitted then the application redirects to
+                 * the list of notes */
+                return $this->redirectToRoute('note_list');
+            }
+
+            return $this->render('note/new.html.twig', [
+                'form' => $form->createView()
+            ]);
         }
 
+        /* Return the template of the form */
         return $this->render('note/new.html.twig', [
             'form' => $form->createView()
         ]);
+
     }
+
+
+    /**
+     * @Route ("/notes/search", name="note_search")
+     * @Method ("POST")
+     * @param String $tag
+     * @return the view containing the notes with the researched tag
+     */
+    public function searchNotes(){
+
+        $tag = $_POST["Search"];
+        $notes = $this->getDoctrine()->getRepository(Note::class)->findAll();
+        $notes_with_tag = [];
+
+        foreach ($notes as $note){
+            if ($note->searchTag($tag)){
+                array_push($notes_with_tag, $note);
+            }
+        }
+
+        return $this->render('note/listNotes.html.twig',[
+            'notes' => $notes_with_tag
+        ]);
+    }
+
 
 }

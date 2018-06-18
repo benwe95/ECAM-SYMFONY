@@ -17,14 +17,14 @@
                                 <span class="align-left note-details">
                                     {#<img class="note-author-img rounded-circle" src="{{ asset('images/alien-profile.png') }}">#}
                                      </span>
-                                <span class="pl-2 note-details"> Last edited on {{ note.date|date('Y-m-d H:i') }}</span>
+                                <span class="pl-2 note-details"> Last update on {{ note.date|date('Y-m-d H:i') }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="note-text">
-                                {{ note.content }}!
+                                {{ note.content }}
                             </div>
                         </div>
                     </div>

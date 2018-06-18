@@ -50,13 +50,16 @@ class NoteApiController extends AbstractController
      */
     public function listNotes(){
 
-        /*Pour que le navigateur puisse faire la requête, il faut ajouter le verbe OPTIONS qui
-        est envoyé par défaut dans un premier temps.
-        Cela est dû au Cross-Origin Resource Sharing (CORS)*/
-        /*if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-        {
-            $this->handleCrossOriginResponse("GET, OPTIONS");
-        }*/
+        /* /!\ This is no more needed due to the CORS recipe added with composer /!\
+         *
+         * Pour que le navigateur puisse faire la requête, il faut ajouter le verbe OPTIONS qui
+         * est envoyé par défaut dans un premier temps.
+         * Cela est dû au Cross-Origin Resource Sharing (CORS)
+         * if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+         * {
+         *     $this->handleCrossOriginResponse("GET, OPTIONS");
+         *   }
+         */
 
         //Retrieve the Notes from the database in an array()
         $data = $this->getDoctrine()->getRepository(Note::class)->findAll();
@@ -65,7 +68,6 @@ class NoteApiController extends AbstractController
         $jsoncontent = $this->get('serializer')->serialize($data, 'json');
 
         $response = JsonResponse::fromJsonString($jsoncontent);
-        //$response->headers->set('access-control-allow-origin','*');
 
         //Return the JSON format to the client
         /*By default 'Content-type' is 'application/json'*/
@@ -77,7 +79,7 @@ class NoteApiController extends AbstractController
      * @Route("/api/notes/{id}", name="api_note_show")
      * @Method({"GET"})
      */
-    public function showNote(Note $note){
+    public function showNote(Request $request, Note $note){
 
         $jsoncontent = $this->get('serializer')->serialize($note, 'json');
 
@@ -148,16 +150,17 @@ class NoteApiController extends AbstractController
     }
 
 
-    /* /!\ This is no more needed due to the CORS recipe added with composer !! /!\
+    /* /!\ This is no more needed due to the CORS recipe added with composer /!\
      *
      * Handle the automated OPTIONS request of the browser for Cross-Origin Resource Sharing
+     *
+     * public function handleCrossOriginResponse(string $verbs){
+     *   $response = new Response();
+     *   $response->headers->set('Content-Type', 'application/text');
+     *   $response->headers->set('Access-Control-Allow-Origin', '*');
+     *   $response->headers->set("Access-Control-Allow-Methods", $verbs);
+     *   $response->headers->set('Access-Control-Allow-Headers', 'Content-Type',true);
+     *   return $response;
+     * }
      */
-    /*public function handleCrossOriginResponse(string $verbs){
-        $response = new Response();
-        $response->headers->set('Content-Type', 'application/text');
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set("Access-Control-Allow-Methods", $verbs);
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type',true);
-        return $response;
-    }*/
 }

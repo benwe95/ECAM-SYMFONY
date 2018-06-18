@@ -32,8 +32,8 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             // api_category_list
             if ('/api/categories' === $pathinfo) {
                 $ret = array (  '_controller' => 'App\\Controller\\CategoryApiController::listCategories',  '_route' => 'api_category_list',);
-                if (!in_array($canonicalMethod, array('GET', 'OPTIONS'))) {
-                    $allow = array_merge($allow, array('GET', 'OPTIONS'));
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
                     goto not_api_category_list;
                 }
 
@@ -44,8 +44,8 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             // api_category_show
             if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
                 $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_show')), array (  '_controller' => 'App\\Controller\\CategoryApiController::showCategory',));
-                if (!in_array($canonicalMethod, array('GET', 'OPTIONS'))) {
-                    $allow = array_merge($allow, array('GET', 'OPTIONS'));
+                if (!in_array($canonicalMethod, array('GET'))) {
+                    $allow = array_merge($allow, array('GET'));
                     goto not_api_category_show;
                 }
 
@@ -56,8 +56,8 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             // api_category_add
             if ('/api/categories' === $pathinfo) {
                 $ret = array (  '_controller' => 'App\\Controller\\CategoryApiController::addCategory',  '_route' => 'api_category_add',);
-                if (!in_array($requestMethod, array('POST', 'OPTIONS'))) {
-                    $allow = array_merge($allow, array('POST', 'OPTIONS'));
+                if (!in_array($requestMethod, array('POST'))) {
+                    $allow = array_merge($allow, array('POST'));
                     goto not_api_category_add;
                 }
 
@@ -68,8 +68,8 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             // api_category_edit
             if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
                 $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_edit')), array (  '_controller' => 'App\\Controller\\CategoryApiController::editCategory',));
-                if (!in_array($requestMethod, array('PUT', 'OPTIONS'))) {
-                    $allow = array_merge($allow, array('PUT', 'OPTIONS'));
+                if (!in_array($requestMethod, array('PUT'))) {
+                    $allow = array_merge($allow, array('PUT'));
                     goto not_api_category_edit;
                 }
 
@@ -80,8 +80,8 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             // api_category_del
             if (preg_match('#^/api/categories/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
                 $ret = $this->mergeDefaults(array_replace($matches, array('_route' => 'api_category_del')), array (  '_controller' => 'App\\Controller\\CategoryApiController::deleteCategory',));
-                if (!in_array($requestMethod, array('DELETE', 'OPTIONS'))) {
-                    $allow = array_merge($allow, array('DELETE', 'OPTIONS'));
+                if (!in_array($requestMethod, array('DELETE'))) {
+                    $allow = array_merge($allow, array('DELETE'));
                     goto not_api_category_del;
                 }
 
@@ -219,6 +219,18 @@ class srcDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             if (0 === strpos($pathinfo, '/notes/show') && preg_match('#^/notes/show/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {
                 return $this->mergeDefaults(array_replace($matches, array('_route' => 'note_show')), array (  '_controller' => 'App\\Controller\\NoteController::showNote',));
             }
+
+            // note_search
+            if ('/notes/search' === $pathinfo) {
+                $ret = array (  '_controller' => 'App\\Controller\\NoteController::searchNotes',  '_route' => 'note_search',);
+                if (!in_array($requestMethod, array('POST'))) {
+                    $allow = array_merge($allow, array('POST'));
+                    goto not_note_search;
+                }
+
+                return $ret;
+            }
+            not_note_search:
 
             // note_edit
             if (0 === strpos($pathinfo, '/notes/edit') && preg_match('#^/notes/edit/(?P<id>[^/]++)$#sD', $pathinfo, $matches)) {

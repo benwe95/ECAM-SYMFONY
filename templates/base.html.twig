@@ -7,6 +7,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <script href="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+        <!-- <script src="/jquery-3.2.1.min.js"></script>
+        <script src="/bootstrap.min.js"></script> -->
+
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
@@ -29,10 +32,10 @@
                     <a class="nav-item nav-link active" href="{{ path('category_list') }}">Categories</a>
                 </ul>
 
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search tag" aria-label="Search">
+                <form class="form-inline my-2 my-lg-0" action="/notes/search" method="POST">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search tag" name="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        Search
                     </button>
                 </form>
             </div>
